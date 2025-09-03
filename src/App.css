@@ -1,0 +1,140 @@
+.app {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 20px;
+  background: #0d1117;
+  min-height: 100vh;
+  color: #cccccc;
+}
+
+.app-header {
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.app-header h1 {
+  color: #58a6ff;
+  font-size: 2.5rem;
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.app-header p {
+  color: #8b949e;
+  font-size: 1.1rem;
+  margin: 0 0 12px 0;
+}
+
+.app-stats {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.stat-item {
+  background: #21262d;
+  color: #c9d1d9;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: 500;
+  border: 1px solid #30363d;
+}
+
+.view-selector {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #161b22;
+  border-radius: 8px;
+  border: 1px solid #30363d;
+}
+
+.view-button {
+  padding: 12px 20px;
+  border: 2px solid #30363d;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.2s ease;
+  background: #21262d;
+  color: #e6edf3;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.view-button:hover {
+  border-color: #58a6ff;
+  background: #264f78;
+  transform: translateY(-1px);
+}
+
+.view-button.active {
+  border-color: #58a6ff;
+  background: #0969da;
+  color: white;
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.2);
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 20px;
+  padding: 16px;
+  background: #161b22;
+  border-radius: 8px;
+  border: 1px solid #30363d;
+}
+
+.control-button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.control-button.expand {
+  background: #238636;
+  color: white;
+}
+
+.control-button.expand:hover {
+  background: #2ea043;
+}
+
+.control-button.collapse {
+  background: #da3633;
+  color: white;
+}
+
+.control-button.collapse:hover {
+  background: #f85149;
+}
+
+.data-info {
+  margin-left: auto;
+  color: #8b949e;
+  font-size: 14px;
+  padding: 8px 12px;
+  background: #0d1117;
+  border-radius: 6px;
+  border: 1px solid #30363d;
+}
+
+.tree-container {
+  background: #0d1117;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+}

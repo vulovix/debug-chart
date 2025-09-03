@@ -1,0 +1,71 @@
+.timeline-debugger {
+  background-color: #1e1e1e;
+  color: #ffffff;
+  font-family: Arial, sans-serif;
+  padding: 20px;
+}
+
+.timeline-svg {
+  background-color: #2d2d2d;
+  border: 1px solid #444;
+}
+
+.span-label {
+  font-size: 10px;
+  fill: #cccccc;
+}
+
+.lane-label {
+  font-size: 12px;
+  fill: #ffffff;
+}
+
+.event-marker {
+  cursor: pointer;
+}
+
+.event-marker:hover {
+  r: 6;
+}
+
+.scrubber-line {
+  pointer-events: none;
+}
+
+.tooltip {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background-color: #333;
+  border: 1px solid #555;
+  padding: 10px;
+  max-width: 300px;
+  max-height: 400px;
+  overflow-y: auto;
+  z-index: 1000;
+}
+
+.tooltip h4 {
+  margin-top: 0;
+}
+
+.tooltip ul {
+  list-style: none;
+  padding: 0;
+}
+
+.tooltip li {
+  margin-bottom: 5px;
+}
+
+.tooltip button {
+  background-color: #555;
+  color: #fff;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.tooltip button:hover {
+  background-color: #777;
+}
