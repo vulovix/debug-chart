@@ -1,6 +1,6 @@
-import { useMemo, useRef } from "react";
+import { useMemo, useRef, useState } from "react";
 import type { TimelineEvent, Span } from "./types";
-import { AXIS_HEIGHT, SPAN_HEIGHT, LANE_HEIGHT, TOLERANCE_MS } from "./constants";
+import { AXIS_HEIGHT, SPAN_HEIGHT, LANE_HEIGHT, PIXELS_PER_SECOND } from "./constants";
 import { useTimelineData, useMouseInteraction, useWindowResize } from "./hooks";
 import { TimelineAxis, TimelineSpans, TimelineLanes, TimelineScrubber, TooltipPanel } from "./components";
 import { GiJumpAcross, GiJumpingRope } from "react-icons/gi";
@@ -17,17 +17,18 @@ export default function TimelineDebuggerFeature({ events, showSpans = true }: Pr
   const { mouseX, isFrozen, frozenX, hoveredEventId, setHoveredEventId, containerRef, onMove, onClick } = useMouseInteraction();
   const windowHeight = useWindowResize();
   const timelineScrollRef = useRef<HTMLDivElement>(null);
+  const [toleranceMs, setToleranceMs] = useState(500);
 
   const activeX = isFrozen ? frozenX : mouseX;
 
   // jump to next event
   const jumpToNextEvent = () => {
     if (!timelineScrollRef.current || activeX == null) return;
-    const currentTime = startTime + Math.round(activeX / 40) * 1000;
+    const currentTime = startTime + Math.round(activeX / PIXELS_PER_SECOND) * 1000;
     const nextEvent = events.find((ev) => new Date(ev.date).getTime() > currentTime);
     if (nextEvent) {
       const nextTime = new Date(nextEvent.date).getTime();
-      const nextX = ((nextTime - startTime) / 1000) * 40;
+      const nextX = ((nextTime - startTime) / 1000) * PIXELS_PER_SECOND;
       timelineScrollRef.current.scrollLeft = Math.max(0, nextX - 200); // scroll to position with some offset, ensure non-negative
     }
   };
@@ -35,11 +36,11 @@ export default function TimelineDebuggerFeature({ events, showSpans = true }: Pr
   // jump to previous event
   const jumpToPreviousEvent = () => {
     if (!timelineScrollRef.current || activeX == null) return;
-    const currentTime = startTime + Math.round(activeX / 40) * 1000;
+    const currentTime = startTime + Math.round(activeX / PIXELS_PER_SECOND) * 1000;
     const previousEvent = [...events].reverse().find((ev) => new Date(ev.date).getTime() < currentTime);
     if (previousEvent) {
       const prevTime = new Date(previousEvent.date).getTime();
-      const prevX = ((prevTime - startTime) / 1000) * 40;
+      const prevX = ((prevTime - startTime) / 1000) * PIXELS_PER_SECOND;
       timelineScrollRef.current.scrollLeft = Math.max(0, prevX - 200); // scroll to position with some offset, ensure non-negative
     }
   };
@@ -49,16 +50,16 @@ export default function TimelineDebuggerFeature({ events, showSpans = true }: Pr
     if (!timelineScrollRef.current || events.length === 0) return;
     const firstEvent = events.reduce((earliest, current) => (new Date(current.date).getTime() < new Date(earliest.date).getTime() ? current : earliest));
     const firstTime = new Date(firstEvent.date).getTime();
-    const firstX = ((firstTime - startTime) / 1000) * 40;
+    const firstX = ((firstTime - startTime) / 1000) * PIXELS_PER_SECOND;
     timelineScrollRef.current.scrollLeft = Math.max(0, firstX - 200); // scroll to position with some offset, ensure non-negative
   };
 
   // find events near activeX
   const eventsNear = useMemo(() => {
     if (activeX == null) return [];
-    const timeAtX = startTime + Math.round(activeX / 40) * 1000;
-    return events.filter((ev) => Math.abs(new Date(ev.date).getTime() - timeAtX) <= TOLERANCE_MS);
-  }, [activeX, events, startTime]);
+    const timeAtX = startTime + Math.round(activeX / PIXELS_PER_SECOND) * 1000;
+    return events.filter((ev) => Math.abs(new Date(ev.date).getTime() - timeAtX) <= toleranceMs);
+  }, [activeX, events, startTime, toleranceMs]);
 
   // find current span
   const currentSpan = useMemo(() => {
@@ -91,6 +92,18 @@ export default function TimelineDebuggerFeature({ events, showSpans = true }: Pr
       <div className="dbg2-toolbar">
         <div className="dbg2-title">Debugger Two — Interactive Timeline</div>
         <div className="dbg2-actions">
+          <div className="dbg2-tolerance-control">
+            <input
+              id="tolerance-input"
+              type="number"
+              value={toleranceMs}
+              onChange={(e) => setToleranceMs(Number(e.target.value))}
+              min="1"
+              max="10000"
+              step="50"
+              title="Event Threshold (ms)"
+            />
+          </div>
           <button className="dbg2-first-event-btn" onClick={jumpToFirstEvent} title="Jump to First Event">
             <GiJumpingRope style={{ transform: "scale(1.8)" }} />
           </button>
@@ -140,7 +153,7 @@ export default function TimelineDebuggerFeature({ events, showSpans = true }: Pr
         </div>
       </div>
 
-      <TooltipPanel activeX={activeX} startTime={startTime} currentSpan={currentSpan} eventsNear={eventsNear} isFrozen={isFrozen} />
+      <TooltipPanel activeX={activeX} startTime={startTime} currentSpan={currentSpan} eventsNear={eventsNear} isFrozen={isFrozen} toleranceMs={toleranceMs} />
     </div>
   );
 }
