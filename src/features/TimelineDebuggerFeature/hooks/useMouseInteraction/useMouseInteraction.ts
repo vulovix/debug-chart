@@ -1,11 +1,16 @@
 import { useState, useCallback, useRef } from "react";
 
-export function useMouseInteraction() {
+export function useMouseInteraction(pixelsPerSecond: number) {
   const [mouseX, setMouseX] = useState<number | null>(null);
   const [isFrozen, setIsFrozen] = useState(false);
-  const [frozenX, setFrozenX] = useState<number | null>(null);
   const [hoveredEventId, setHoveredEventId] = useState<number | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
+
+  // Store time positions instead of pixel positions for frozen state
+  const [frozenTimePosition, setFrozenTimePosition] = useState<number | null>(null);
+
+  // Convert frozen time position to pixel position when pixelsPerSecond changes
+  const frozenPixelPosition = frozenTimePosition !== null ? frozenTimePosition * pixelsPerSecond : null;
 
   const onMove = useCallback(
     (e: React.MouseEvent) => {
@@ -23,17 +28,19 @@ export function useMouseInteraction() {
     if (mouseX == null) return;
     if (isFrozen) {
       setIsFrozen(false);
-      setFrozenX(null);
+      setFrozenTimePosition(null);
     } else {
       setIsFrozen(true);
-      setFrozenX(mouseX);
+      // Store the time position instead of pixel position
+      const timePosition = mouseX / pixelsPerSecond;
+      setFrozenTimePosition(timePosition);
     }
-  }, [mouseX, isFrozen]);
+  }, [mouseX, isFrozen, pixelsPerSecond]);
 
   return {
     mouseX,
     isFrozen,
-    frozenX,
+    frozenX: frozenPixelPosition,
     hoveredEventId,
     setHoveredEventId,
     containerRef,

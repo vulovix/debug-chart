@@ -1,13 +1,14 @@
 import { formatTimeShort } from "../../utils";
-import { AXIS_HEIGHT, PIXELS_PER_SECOND } from "../../constants";
+import { AXIS_HEIGHT } from "../../constants";
 
 type TimelineAxisProps = {
   startTime: number;
   totalSeconds: number;
   width: number;
+  pixelsPerSecond: number;
 };
 
-export function TimelineAxis({ startTime, totalSeconds, width }: TimelineAxisProps) {
+export function TimelineAxis({ startTime, totalSeconds, width, pixelsPerSecond }: TimelineAxisProps) {
   // compute tick interval for axis
   const tickIntervalSeconds = Math.max(1, Math.ceil(totalSeconds / 8));
 
@@ -16,7 +17,7 @@ export function TimelineAxis({ startTime, totalSeconds, width }: TimelineAxisPro
       <rect x={0} y={0} width={width} height={AXIS_HEIGHT} className="dbg2-axis-bg" />
       {Array.from({ length: Math.ceil(totalSeconds / tickIntervalSeconds) + 1 }).map((_, idx) => {
         const secs = idx * tickIntervalSeconds;
-        const x = secs * PIXELS_PER_SECOND;
+        const x = secs * pixelsPerSecond;
         const t = new Date(startTime + secs * 1000);
         return (
           <g key={idx} transform={`translate(${x},0)`}>

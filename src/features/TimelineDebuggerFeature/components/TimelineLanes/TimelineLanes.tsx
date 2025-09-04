@@ -1,6 +1,6 @@
 import type { TabNode, TimelineEvent } from "../../types";
 import { getDotColor, lightenColor } from "../../utils";
-import { AXIS_HEIGHT, PIXELS_PER_SECOND, SPAN_HEIGHT } from "../../constants";
+import { AXIS_HEIGHT, SPAN_HEIGHT } from "../../constants";
 
 type TimelineLanesProps = {
   tabs: TabNode[];
@@ -10,9 +10,19 @@ type TimelineLanesProps = {
   showSpans: boolean;
   hoveredEventId: number | null;
   setHoveredEventId: (id: number | null) => void;
+  pixelsPerSecond: number;
 };
 
-export function TimelineLanes({ tabs, startTime, width, dynamicLaneHeight, showSpans, hoveredEventId, setHoveredEventId }: TimelineLanesProps) {
+export function TimelineLanes({
+  tabs,
+  startTime,
+  width,
+  dynamicLaneHeight,
+  showSpans,
+  hoveredEventId,
+  setHoveredEventId,
+  pixelsPerSecond,
+}: TimelineLanesProps) {
   return (
     <>
       {tabs.map((tab, i) => {
@@ -24,7 +34,7 @@ export function TimelineLanes({ tabs, startTime, width, dynamicLaneHeight, showS
             {/* events for this tab */}
             {tab.events.map((ev: TimelineEvent) => {
               const t = new Date(ev.date).getTime();
-              const x = ((t - startTime) / 1000) * PIXELS_PER_SECOND;
+              const x = ((t - startTime) / 1000) * pixelsPerSecond;
               let cy = dynamicLaneHeight / 2;
               if (ev.scope === "page") {
                 cy = dynamicLaneHeight / 4;

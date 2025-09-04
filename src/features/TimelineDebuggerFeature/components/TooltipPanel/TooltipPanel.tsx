@@ -1,6 +1,5 @@
 import type { TimelineEvent, Span } from "../../types";
 import { formatTimeIso, getDotColor } from "../../utils";
-import { PIXELS_PER_SECOND } from "../../constants";
 
 type TooltipPanelProps = {
   activeX: number | null;
@@ -9,16 +8,19 @@ type TooltipPanelProps = {
   eventsNear: TimelineEvent[];
   isFrozen: boolean;
   toleranceMs: number;
+  pixelsPerSecond: number;
 };
 
-export function TooltipPanel({ activeX, startTime, currentSpan, eventsNear, isFrozen, toleranceMs }: TooltipPanelProps) {
+export function TooltipPanel({ activeX, startTime, currentSpan, eventsNear, isFrozen, toleranceMs, pixelsPerSecond }: TooltipPanelProps) {
   return (
     <div className="dbg2-tooltip-panel">
       {activeX == null ? (
         <div className="dbg2-tooltip-empty">Hover timeline to inspect events</div>
       ) : (
         <div className="dbg2-tooltip">
-          <div className="dbg2-tooltip-time">{activeX != null ? formatTimeIso(new Date(startTime + Math.round(activeX / PIXELS_PER_SECOND) * 1000).toISOString()) : "—"}</div>
+          <div className="dbg2-tooltip-time">
+            {activeX != null ? formatTimeIso(new Date(startTime + Math.round(activeX / pixelsPerSecond) * 1000).toISOString()) : "—"}
+          </div>
           {currentSpan && (
             <div className="dbg2-tooltip-span">
               Span: {formatTimeIso(currentSpan.from)} - {formatTimeIso(currentSpan.to)}

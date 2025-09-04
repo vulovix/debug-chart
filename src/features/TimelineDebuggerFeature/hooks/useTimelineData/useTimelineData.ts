@@ -1,9 +1,8 @@
 import { useMemo } from "react";
 import type { TimelineEvent } from "../../types";
 import { buildSpans, buildHierarchy } from "../../utils";
-import { PIXELS_PER_SECOND } from "../../constants";
 
-export function useTimelineData(events: TimelineEvent[]) {
+export function useTimelineData(events: TimelineEvent[], pixelsPerSecond: number) {
   const spans = useMemo(() => buildSpans(events), [events]);
   const hierarchy = useMemo(() => buildHierarchy(events), [events]);
 
@@ -18,7 +17,7 @@ export function useTimelineData(events: TimelineEvent[]) {
   }, [events]);
 
   const totalSeconds = Math.max(1, Math.ceil((endTime - startTime) / 1000));
-  const width = totalSeconds * PIXELS_PER_SECOND;
+  const width = totalSeconds * pixelsPerSecond;
 
   const tabs = useMemo(() => Object.values(hierarchy).sort((a, b) => a.tabId - b.tabId), [hierarchy]);
 
