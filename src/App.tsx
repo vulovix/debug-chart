@@ -1,5 +1,5 @@
-import { TimelineDebugger } from "./debugger-two";
-import { sampleEvents, makeEvents } from "./debugger-two/sampleData";
+import { TimelineDebuggerFeature } from "./features/TimelineDebuggerFeature";
+import { sampleEvents, makeEvents } from "./features/TimelineDebuggerFeature/sampleData";
 
 function App() {
   const many = makeEvents(1200);
@@ -7,7 +7,7 @@ function App() {
 
   return (
     <div style={{ background: "#071019", minHeight: "100vh" }}>
-      <TimelineDebugger events={events} />
+      <TimelineDebuggerFeature events={events} />
     </div>
   );
 }
