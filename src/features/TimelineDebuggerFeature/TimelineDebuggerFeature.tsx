@@ -1,8 +1,9 @@
-import { useMemo } from "react";
+import { useMemo, useRef } from "react";
 import type { TimelineEvent, Span } from "./types";
 import { AXIS_HEIGHT, SPAN_HEIGHT, LANE_HEIGHT, TOLERANCE_MS } from "./constants";
 import { useTimelineData, useMouseInteraction, useWindowResize } from "./hooks";
 import { TimelineAxis, TimelineSpans, TimelineLanes, TimelineScrubber, TooltipPanel } from "./components";
+import { GiJumpAcross, GiJumpingRope } from "react-icons/gi";
 import "./style.css";
 
 type Props = {
@@ -15,8 +16,42 @@ export default function TimelineDebuggerFeature({ events, showSpans = true }: Pr
   const { spans, startTime, totalSeconds, width, tabs } = useTimelineData(events);
   const { mouseX, isFrozen, frozenX, hoveredEventId, setHoveredEventId, containerRef, onMove, onClick } = useMouseInteraction();
   const windowHeight = useWindowResize();
+  const timelineScrollRef = useRef<HTMLDivElement>(null);
 
   const activeX = isFrozen ? frozenX : mouseX;
+
+  // jump to next event
+  const jumpToNextEvent = () => {
+    if (!timelineScrollRef.current || activeX == null) return;
+    const currentTime = startTime + Math.round(activeX / 40) * 1000;
+    const nextEvent = events.find((ev) => new Date(ev.date).getTime() > currentTime);
+    if (nextEvent) {
+      const nextTime = new Date(nextEvent.date).getTime();
+      const nextX = ((nextTime - startTime) / 1000) * 40;
+      timelineScrollRef.current.scrollLeft = Math.max(0, nextX - 200); // scroll to position with some offset, ensure non-negative
+    }
+  };
+
+  // jump to previous event
+  const jumpToPreviousEvent = () => {
+    if (!timelineScrollRef.current || activeX == null) return;
+    const currentTime = startTime + Math.round(activeX / 40) * 1000;
+    const previousEvent = [...events].reverse().find((ev) => new Date(ev.date).getTime() < currentTime);
+    if (previousEvent) {
+      const prevTime = new Date(previousEvent.date).getTime();
+      const prevX = ((prevTime - startTime) / 1000) * 40;
+      timelineScrollRef.current.scrollLeft = Math.max(0, prevX - 200); // scroll to position with some offset, ensure non-negative
+    }
+  };
+
+  // jump to first event
+  const jumpToFirstEvent = () => {
+    if (!timelineScrollRef.current || events.length === 0) return;
+    const firstEvent = events.reduce((earliest, current) => (new Date(current.date).getTime() < new Date(earliest.date).getTime() ? current : earliest));
+    const firstTime = new Date(firstEvent.date).getTime();
+    const firstX = ((firstTime - startTime) / 1000) * 40;
+    timelineScrollRef.current.scrollLeft = Math.max(0, firstX - 200); // scroll to position with some offset, ensure non-negative
+  };
 
   // find events near activeX
   const eventsNear = useMemo(() => {
@@ -55,12 +90,24 @@ export default function TimelineDebuggerFeature({ events, showSpans = true }: Pr
     <div className="dbg2-root">
       <div className="dbg2-toolbar">
         <div className="dbg2-title">Debugger Two — Interactive Timeline</div>
+        <div className="dbg2-actions">
+          <button className="dbg2-first-event-btn" onClick={jumpToFirstEvent} title="Jump to First Event">
+            <GiJumpingRope style={{ transform: "scale(1.8)" }} />
+          </button>
+          <button className="dbg2-prev-event-btn" onClick={jumpToPreviousEvent} title="Jump to Previous Event">
+            <GiJumpAcross style={{ transform: "scale(1.8) scaleX(-1)" }} />
+          </button>
+          <button className="dbg2-next-event-btn" onClick={jumpToNextEvent} title="Jump to Next Event">
+            <GiJumpAcross style={{ transform: "scale(1.8)" }} />
+          </button>
+        </div>
       </div>
 
       <div className="dbg2-container" ref={containerRef} onMouseMove={onMove} onClick={onClick} style={{ height: `${windowHeight - 340}px` }}>
         {/* Scrollable timeline with tab labels inside */}
         <div
           className="dbg2-timeline-scroll"
+          ref={timelineScrollRef}
           style={{ width: `${width}px`, height: `${svgHeight + 46}px`, overflowY: isScrollable ? "auto" : "visible", position: "relative" }}
         >
           {/* Tab labels positioned absolutely inside the scrollable area */}
